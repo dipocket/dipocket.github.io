@@ -231,8 +231,7 @@ PSU-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0)
 Gecko/20100101 Firefox/54.0
 TPP-Redirect-URI: https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb&code_Cchallenge_Mmethod="S256"
 Date: Sun, 06 Aug 2017 15:02:37 GMT
-Digest: SHA-
-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=
+Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=
 Signature: keyId="SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E",algorithm="rsa-sha256",
 headers="Digest X-Request-ID PSU-ID TPP-Redirect-URI Date",
 signature="Base64(RSA-SHA256(signing string))"
@@ -436,8 +435,7 @@ POST [host]/v1/consents</pre>
     <h3>Request </h3>
     <pre class="code" style="overflow-wrap: break-word !important;">
 POST [host]/OpenBankingServices/v1/consents HTTP/1.1
-Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
-        JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9
+Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value; JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9
 Content-Type: application/json
 Tpp-Redirect-Uri: TPP-Redirect-URITEST
 Tpp-Nok-Redirect-Uri: TPP-Nok-Redirect-URITEST
@@ -557,8 +555,7 @@ GET [host]/OpenBankingServices/v1/consents/[consentId]/status</pre>
     <h4>Request </h4>
     <pre class="code">
 GET [host]/OpenBankingServices/v1/consents/[consentId]/status HTTP/1.1
-Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
-        JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9
+Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value; JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9
 Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=
 Signature: keyId="SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E",algorithm="rsa-sha256",headers="Digest
 X-Request-ID PSU-ID TPP-Redirect-URI Date",signature="Base64(RSA-SHA256(signing string))"
@@ -583,7 +580,6 @@ Connection: keep-alive
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 1; mode=block
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
-Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0
 Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0
 Pragma: no-cache
 Expires: 0
@@ -796,8 +792,7 @@ DELETE [host]/OpenBankingServices/v1/consents/[consentId]</pre>
     <h4>Request </h4>
     <pre class="code">
 DELETE [host]/OpenBankingServices/v1/consents/[consentId] HTTP/1.1
-Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
-        JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9
+Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value; JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9
 Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=
 Signature: keyId="SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E",algorithm="rsa-sha256",
 headers="Digest X-Request-ID PSU-ID TPP-Redirect-URI Date",signature="Base64(RSA-SHA256(signing string))"
@@ -820,7 +815,6 @@ Connection: keep-alive
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 1; mode=block
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
-Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0
 Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0
 Pragma: no-cache
 Expires: 0
@@ -903,13 +897,10 @@ GET [host]/OpenBankingServices/v1/accounts</pre>
     <h4>Request </h4>
     <pre class="code">
 GET [host]/OpenBankingServices/v1/accounts HTTP/1.1
-Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
-   JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9
+Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value; JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9
 Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=
-Signature: keyId="SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E",algorithm="rsa-sha256",headers="Digest
-   X-Request-ID PSU-ID TPP-Redirect-URI Date",signature="Base64(RSA-SHA256(signing string))"
-Tpp-Signature-Certificate:
-   MIIElDCCA3ygAwIBAgIJAIX2W+2EDxehMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAkZSMQswCQYDVQQIEwJGUjETMBEGA1UEChMKQ2VydEV1cm9wZTETMBEGA1UEAxMKQ2VydEV1cm9wZTAeFw0xOTAyMTkxNTIyMDdaFw0yMDAyMTkxNTIyMDdaMIGFMQswCQYDVQQGEwJHQjErMCkGA1UECgwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDErMCkGA1UEAwwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDEcMBoGA1UEYQwTUFNER0ItRkNBLWt0LTQ4NDM0NzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMoLgXDQ+nditYb2tTwxtDnDk5sOPIJyHgeN6omgcOmbmad9+b9PPknWcCdNuyruv0keIv5A8592j8IxIzF3RaNH0OE+SLzFMuAz2xRbA2BrD6q1XPcML5H4lkmEuYGuH+Xtv9zIaTtPQxapQmruUPDHD3+9MjmyyHpkyrRnqQ2JG+df7CEeD9eN53DU7B4u2MgXiibQcyWk2dk+KpGSIssOZA5+aetWs29aD6BJUUOt492UeLIMZAtlGZzF+I5ASMiXzL4wnUSOOLmSfTIsSVm7ChebZe6b7PuY/k3kBw2rrTNhHGWqYPpyzkri9lPhtICe/12r8Mze3UIOZ3QHghMCAwEAAaOCAUUwggFBMAkGA1UdEwQCMAAwHQYDVR0OBBYEFB2DbT6Y4KSVWTsDRIaIet6L0XCCMB8GA1UdIwQYMBaAFNINLe/phgwefLhOutKprennyA1PMAkGA1UdEQQCMAAwUgYDVR0fBEswSTBHoEWgQ4ZBaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS5jcmwwgYcGCCsGAQUFBwEBBHsweTAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Aua29uc2VudHVzLmNvbTBQBggrBgEFBQcwAoZEaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS1jYS5kZXIwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4IBAQAFrsonr/NNN2Hl9EBB+aAhB3exNnDXCOM8eqoDnwTA3A5Nyj5gXq2cy5s8S2CjAodj9yG3ZQdAxN/MVlZ909cmZC87M87KGw0x1LkfF5M65nMz5ynx6NeCASO0uqNkt4yKrT6EDuq7E8hoFteYQ6z4xMKX3NZ2KzIE8EWxuHOYPSjEbCeYea4ACTThOlPeFgWFMTs/oRXMkDRTcFcWthEaUKiFRJsqGMKZNp++q9gOAcB84H6+PekbieZKHxNEXTiFIwKMhCQ/FI8kwhdJxq8iBRc++fCkZ/HfS0ezYQoUaCfGckZpS6HK8TKP/HHNe/TCxS1xFVkO1k8cNK5ZFjQp
+Signature: keyId="SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E",algorithm="rsa-sha256",headers="Digest X-Request-ID PSU-ID TPP-Redirect-URI Date",signature="Base64(RSA-SHA256(signing string))"
+Tpp-Signature-Certificate: MIIElDCCA3ygAwIBAgIJAIX2W+2EDxehMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAkZSMQswCQYDVQQIEwJGUjETMBEGA1UEChMKQ2VydEV1cm9wZTETMBEGA1UEAxMKQ2VydEV1cm9wZTAeFw0xOTAyMTkxNTIyMDdaFw0yMDAyMTkxNTIyMDdaMIGFMQswCQYDVQQGEwJHQjErMCkGA1UECgwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDErMCkGA1UEAwwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDEcMBoGA1UEYQwTUFNER0ItRkNBLWt0LTQ4NDM0NzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMoLgXDQ+nditYb2tTwxtDnDk5sOPIJyHgeN6omgcOmbmad9+b9PPknWcCdNuyruv0keIv5A8592j8IxIzF3RaNH0OE+SLzFMuAz2xRbA2BrD6q1XPcML5H4lkmEuYGuH+Xtv9zIaTtPQxapQmruUPDHD3+9MjmyyHpkyrRnqQ2JG+df7CEeD9eN53DU7B4u2MgXiibQcyWk2dk+KpGSIssOZA5+aetWs29aD6BJUUOt492UeLIMZAtlGZzF+I5ASMiXzL4wnUSOOLmSfTIsSVm7ChebZe6b7PuY/k3kBw2rrTNhHGWqYPpyzkri9lPhtICe/12r8Mze3UIOZ3QHghMCAwEAAaOCAUUwggFBMAkGA1UdEwQCMAAwHQYDVR0OBBYEFB2DbT6Y4KSVWTsDRIaIet6L0XCCMB8GA1UdIwQYMBaAFNINLe/phgwefLhOutKprennyA1PMAkGA1UdEQQCMAAwUgYDVR0fBEswSTBHoEWgQ4ZBaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS5jcmwwgYcGCCsGAQUFBwEBBHsweTAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Aua29uc2VudHVzLmNvbTBQBggrBgEFBQcwAoZEaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS1jYS5kZXIwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4IBAQAFrsonr/NNN2Hl9EBB+aAhB3exNnDXCOM8eqoDnwTA3A5Nyj5gXq2cy5s8S2CjAodj9yG3ZQdAxN/MVlZ909cmZC87M87KGw0x1LkfF5M65nMz5ynx6NeCASO0uqNkt4yKrT6EDuq7E8hoFteYQ6z4xMKX3NZ2KzIE8EWxuHOYPSjEbCeYea4ACTThOlPeFgWFMTs/oRXMkDRTcFcWthEaUKiFRJsqGMKZNp++q9gOAcB84H6+PekbieZKHxNEXTiFIwKMhCQ/FI8kwhdJxq8iBRc++fCkZ/HfS0ezYQoUaCfGckZpS6HK8TKP/HHNe/TCxS1xFVkO1k8cNK5ZFjQp
 Psu-Ip-Address: 192.168.1.1
 Psu-Id: testtppid
 Consent-ID: KNL2UQ7S7JS3MH3
@@ -1047,8 +1038,7 @@ GET [host]/OpenBankingServices/v1/accounts/[iban]</pre>
     <h4>Request </h4>
     <pre class="code">
 GET [host]/OpenBankingServices/v1/accounts/[iban] HTTP/1.1"
-Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
-        JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9"
+Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value; JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9"
 Consent-Id: KNL2UQ7S7JS3MH3"
 Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM="
 Signature: keyId="SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E",algorithm="rsa-sha256",headers="Digest X-Request-ID PSU-ID TPP-Redirect-URI Date",signature="Base64(RSA-SHA256(signing string))""
@@ -1169,8 +1159,7 @@ GET [host]/OpenBankingServices/v1/accounts/[iban]/balances</pre>
     <h4>Request </h4>
     <pre class="code">
 GET [host]/OpenBankingServices/v1/accounts/[iban]/balances HTTP/1.1"
-Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
-        JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9"
+Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value; JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9"
 Consent-Id: KNL2UQ7S7JS3MH3"Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM="
 Signature: keyId="SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E",algorithm="rsa-sha256",headers="Digest X-Request-ID PSU-ID TPP-Redirect-URI Date",signature="Base64(RSA-SHA256(signing string))""
 Tpp-Signature-Certificate: MIIElDCCA3ygAwIBAgIJAIX2W+2EDxehMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAkZSMQswCQYDVQQIEwJGUjETMBEGA1UEChMKQ2VydEV1cm9wZTETMBEGA1UEAxMKQ2VydEV1cm9wZTAeFw0xOTAyMTkxNTIyMDdaFw0yMDAyMTkxNTIyMDdaMIGFMQswCQYDVQQGEwJHQjErMCkGA1UECgwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDErMCkGA1UEAwwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDEcMBoGA1UEYQwTUFNER0ItRkNBLWt0LTQ4NDM0NzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMoLgXDQ+nditYb2tTwxtDnDk5sOPIJyHgeN6omgcOmbmad9+b9PPknWcCdNuyruv0keIv5A8592j8IxIzF3RaNH0OE+SLzFMuAz2xRbA2BrD6q1XPcML5H4lkmEuYGuH+Xtv9zIaTtPQxapQmruUPDHD3+9MjmyyHpkyrRnqQ2JG+df7CEeD9eN53DU7B4u2MgXiibQcyWk2dk+KpGSIssOZA5+aetWs29aD6BJUUOt492UeLIMZAtlGZzF+I5ASMiXzL4wnUSOOLmSfTIsSVm7ChebZe6b7PuY/k3kBw2rrTNhHGWqYPpyzkri9lPhtICe/12r8Mze3UIOZ3QHghMCAwEAAaOCAUUwggFBMAkGA1UdEwQCMAAwHQYDVR0OBBYEFB2DbT6Y4KSVWTsDRIaIet6L0XCCMB8GA1UdIwQYMBaAFNINLe/phgwefLhOutKprennyA1PMAkGA1UdEQQCMAAwUgYDVR0fBEswSTBHoEWgQ4ZBaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS5jcmwwgYcGCCsGAQUFBwEBBHsweTAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Aua29uc2VudHVzLmNvbTBQBggrBgEFBQcwAoZEaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS1jYS5kZXIwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4IBAQAFrsonr/NNN2Hl9EBB+aAhB3exNnDXCOM8eqoDnwTA3A5Nyj5gXq2cy5s8S2CjAodj9yG3ZQdAxN/MVlZ909cmZC87M87KGw0x1LkfF5M65nMz5ynx6NeCASO0uqNkt4yKrT6EDuq7E8hoFteYQ6z4xMKX3NZ2KzIE8EWxuHOYPSjEbCeYea4ACTThOlPeFgWFMTs/oRXMkDRTcFcWthEaUKiFRJsqGMKZNp++q9gOAcB84H6+PekbieZKHxNEXTiFIwKMhCQ/FI8kwhdJxq8iBRc++fCkZ/HfS0ezYQoUaCfGckZpS6HK8TKP/HHNe/TCxS1xFVkO1k8cNK5ZFjQp"
