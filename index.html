@@ -1,10 +1,1673 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta>
+    <title>Open banking - DiPocket API Specification</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        .code {
+            background-color: #e5e5e5;
+            padding: 12px 18px;
+            border: 1px solid #999999;
+            margin-top: 16px;
+            margin-bottom: 16px;
+            overflow-wrap: break-word;
+        }
+
+        .code:after {
+            content: ' ';
+            display: table;
+            height: 1px;
+            clear: both;
+        }
+
+        .code * {
+            font-family: monospace !important;
+            margin-bottom: 0 !important;
+            padding-bottom: 0 !important;
+            font-size: .8rem !important;
+        }
+
+        .indent-left > * {
+            margin-left: 48px !important;
+        }
+    </style>
 </head>
 <body>
-<h1>Hello world!</h1>
+<div class="container"><h1>Open banking &mdash; DiPocket <br>API Specification</h1>
+    <h2>Overview</h2>
+    <p>This document specifies the basic set of API calls to access information about Users accounts by third
+       parties.</p>
+    <p>Process description <a>is here</a>.</p>
+    <h2>API definitions</h2>
+    <p>The following abbreviations are used for the format:</p>
+    <table class="table table-striped">
+        <tr>
+            <td>A</td>
+            <td>=</td>
+            <td>Alphabetic characters</td>
+        </tr>
+        <tr>
+            <td>N</td>
+            <td>=</td>
+            <td>Numeric characters</td>
+        </tr>
+        <tr>
+            <td class="col-10">AN</td>
+            <td>=</td>
+            <td>Alphanumeric</td>
+        </tr>
+        <tr>
+            <td>B</td>
+            <td>=</td>
+            <td>Boolean</td>
+        </tr>
+        <tr>
+            <td>V</td>
+            <td>=</td>
+            <td>Variable character field</td>
+        </tr>
+        <tr>
+            <td>D</td>
+            <td>=</td>
+            <td>Date field</td>
+        </tr>
+    </table>
+    <h2>Conventions</h2>
+    <p>Amounts: all money amounts are represented in cents, e.g.: </p>
+    <ul>
+        <li>GBP 999.99 would be expressed as &lt;99999&gt;</li>
+        <li>PLN 99 would be expressed as &lt;9900&gt;</li>
+    </ul>
+    <h2>Test host</h2>
+    <p>https://lvov.csltd.com.ua</p>
+    <h2>Production host</h2>
+    <p>https://openbanking.dipocket.org</p>
+    <h2>Signing</h2>
+    <p>DiPocket requires to sign request messages. The signature shall be included in the HTTP header. The electronic
+       signature has to be based on a qualified certificate for electronic seals. This qualified certificate has to be
+       issued by a qualified trust service provider. </p>
+    <p>This specification uses on a pure protocol level the following HTTP header in all HTTP requests uniformously for
+       the support of the signature function:</p>
+    <p></p>
+    <p>Request Headers</p>
+    <table class="table table-striped table-bordered">
+        <tr>
+            <td>Attribute</td>
+            <td>Type</td>
+            <td>Description</td>
+        </tr>
+        <tr>
+            <td>Digest</td>
+            <td>String</td>
+            <td><p>Is contained if and only if the &quot;Signature&quot; element is contained in the header of the
+                   request.</p>
+                <p>The &ldquo;Digest&rdquo; Header contains a Hash of the message body. The only hash algorithms that
+                   may be used to calculate the digest within the context of this specification are SHA-256 and
+                   SHA-512.</p></td>
+        </tr>
+        <tr>
+            <td>Signature</td>
+            <td colspan="2">A signature of the request by the TPP on application level. See table &lsquo;Elements of the
+                            &quot;Signature&quot; Header&rsquo; and example below.
+            </td>
+        </tr>
+        <tr>
+            <td>TPP-Signature-Certificate</td>
+            <td>String</td>
+            <td>The certificate used for signing the request, in base64 encoding.</td>
+        </tr>
+    </table>
+    <p>The following table lists the requirements on the &quot;Signature&quot; header:</p>
+    <table class="table table-bordered table-striped">
+        <caption>
+            Elements of the &quot;Signature&quot; Header
+        </caption>
+        <tr>
+            <td>Element</td>
+            <td>Type</td>
+            <td>Condition</td>
+            <td>Requirement</td>
+        </tr>
+        <tr>
+            <td>keyId</td>
+            <td>String</td>
+            <td>Mandatory</td>
+            <td><p>The keyId field is a string that the server can use to look up the component they need to validate
+                   the signature.</p>
+                <p>Serial Number of the TPP's certificate included in the &quot;TPP-Signature-Certificate&quot; header
+                   of this request. It shall be formatted as follows:</p>
+                <code class="mb-2 d-block">keyId=&quot;SN=XXX,CA=YYYYYYYYYYYYYYYY&quot;</code>
+                <p>where &ldquo;XXX&quot; is the serial number of the certificate in hexadecimal coding given in the
+                   TPP-Signature-Certificate Header and &quot;YYYYYYYYYYYYYYYY&quot; is the full Distinguished Name of
+                   the Certification Authority having produced this certificate.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>Algorithm</td>
+            <td>String</td>
+            <td>Optional</td>
+            <td>
+                <p>The &quot;Algorithm &quot; parameter is used to specify the digital signature algorithm to use when
+                   generating the signature. Valid values for this parameter can be found in the Signature. The
+                   algorithm must identify the same algorithm for the signature as presented in the certificate (Element
+                   &quot;TPP-Signature-Certificate&quot;) of this Request. It must identify SHA-256 or SHA-512 as Hash
+                   algorithm.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>Headers</td>
+            <td>String</td>
+            <td>Mandatory</td>
+            <td><p>The &quot;Headers&quot; parameter is used to specify the list of HTTP headers included when
+                   generating the signature for the message. If specified, it should be a lowercased, quoted list of</p>
+                <p>HTTP header fields, separated by a single space</p>
+                <p>character. If not specified, implementations MUST operate as if the field were specified with a
+                   single value, the `Date` header, in the list</p>
+                <p>of HTTP headers. Note that the list order is important, and MUST be specified in the order the HTTP
+                   header field-value pairs are concatenated together during signing.</p>
+                <p>Must include:</p>
+                <ul>
+                    <li>&quot;Digest&quot;,</li>
+                    <li>&quot;X-Request-ID&quot;,</li>
+                    <li>&quot;PSU-ID&quot; (Client ID of the PSU. If and only if &quot;PSU-ID&quot; is included as a
+                        header of the HTTP-Request)
+                    </li>
+                    <li>&quot;PSU-Corporate-ID&quot; (Type of the PSU-ID, needed in scenarios where PSUs have several
+                        PSU-IDs as access possibility. If and only if &quot;PSU Corporate-ID&quot; is included as a
+                        header of the HTTP-Request),
+                    </li>
+                    <li>&quot;Date&quot;</li>
+                    <li>&quot;TPP-Redirect-URI&quot;(if and only if &quot;TPP-Redirect-URI&quot; is included as a header
+                        of the HTTP-Request).
+                    </li>
+                    <li>No other entries may be included.</li>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td>Signature</td>
+            <td>String</td>
+            <td>Mandatory</td>
+            <td>
+                <p>The &quot;signature&quot; parameter is a base 64 encoded digital signature. The client uses the
+                   `algorithm` and `headers` signature parameters to form a canonicalised `signing string`. This
+                   `signing string` is then signed with the key associated with `keyId` and the algorithm corresponding
+                   to `algorithm`. The `signature` parameter is then</p>
+                <p>set to the base 64 encoding of the signature.</p></td>
+        </tr>
+    </table>
+    <h3>Example</h3>
+    <p>Assume a TPP needs to include a signature in the following Request:</p>
+    <div class="code">
+        <p>POST https://api.testbank.com/v1/payments/sepa-credit-transfers</p>
+        <p>Content-Type: application/json</p>
+        <p>X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721</p>
+        <p>PSU-IP-Address: 192.168.8.78</p>
+        <p>PSU-ID: PSU-1234</p>
+        <p>PSU-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0</p>
+        <p>TPP-Redirect-URI:https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb&amp;code_Cchallenge_Mmethod=&quot;S256&quot;</p>
+        <p>Date: Sun, 06 Aug 2017 15:02:37 GMT</p>
+        <p><br></p>
+        <p>{</p>
+        <div class="small indent-left">
+            <p>&quot;instructedAmount&quot;: {&quot;currency&quot;: &quot;EUR&quot;, &quot;amount&quot;:&quot;123&quot;},</p>
+            <p>&quot;debtorAccount&quot;: {&quot;iban&quot;: &quot;DE2310010010123456789&quot;},</p>
+            <p>&quot;creditor&quot;: {&quot;name&quot;: &quot;Merchant123&quot;},</p>
+            <p>&quot;creditorAccount&quot;: {&quot;iban&quot;: &quot;DE23100120020123456789&quot;},</p>
+            <p>&quot;remittanceInformationUnstructured&quot;: &quot;Ref Number Merchant&quot;</p>
+        </div>
+        <p>}</p>
+    </div>
+    <p><br></p>
+    <p>So the body would encode to the following String in Base64:</p>
+    <div class="code mb-4">
+        <p class="text-wrap" style="overflow-wrap: break-word;">
+            eyAgICANCiAgICJpbnN0cnVjdGVkQW1vdW50IjogeyJjdXJyZW5jeSI6ICJFVVIiLCAiYW1vdW50IjogIjEyMyJ9LA0KICAgImRlYnRvckFjY291bnQiOiB7ImliYW4iOiAiREUyMzEwMDEwMDEwMTIzNDU2Nzg5In0sDQogICAiY3JlZGl0b3IiOiB7Im5hbWUiOiAiTWVyY2hhbnQxMjMifSwNCiAgICJjcmVkaXRvckFjY291bnQiOiB7ImliYW4iOiAiREUyMzEwMDEyMDAyMDEyMzQ1Njc4OSJ9LA0KICAgInJlbWl0dGFuY2VJbmZvcm1hdGlvblVuc3RydWN0dXJlZCI6ICJSZWYgTnVtYmVyIE1lcmNoYW50Ig0KfQ== </p>
+    </div>
+    <p>and SHA-256 of the request body is</p>
+    <p class="code"><code>F9li3V7yu8S/QKVOhWiiiqJBhGMVId8UGZ4sBRVPkok=</code> in Base64<br> (<code>'17D962DD5EF2BBC4BF40A54E8568A28AA24184631521DF14199E2C05154F9289'</code>
+                                                                              in hexadecimal representation) </p>
+    <p>So using signature algorithm rsa-sha256 the signed request of the TPP will be</p>
+    <div class="code">
+        <p>POST https://api.testbank.com/v1/payments/sepa-credit-transfers</p>
+        <p>Content-Type: application/json</p>
+        <p>X-Request-ID: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721</p>
+        <p>PSU-IP-Address: 192.168.8.78</p>
+        <p>PSU-ID: PSU-1234</p>
+        <p>PSU-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0)</p>
+        <p>Gecko/20100101 Firefox/54.0</p>
+        <p>TPP-Redirect-URI: https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb&amp;</p>
+        <p>code_Cchallenge_Mmethod=&quot;S256&quot;</p>
+        <p>Date: Sun, 06 Aug 2017 15:02:37 GMT</p>
+        <p>Digest: SHA-</p>
+        <p>256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=</p>
+        <p>Signature: keyId=&quot;SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E&quot;,algorithm=&quot;rsa-sha256&quot;,</p>
+        <p>headers=&quot;Digest X-Request-ID PSU-ID TPP-Redirect-URI Date&quot;,</p>
+        <p>signature=&quot;Base64(RSA-SHA256(signing string))&quot;</p>
+        <p>TPP-Signature-Certificate: TPP's_eIDAS_Certificate</p>
+        <p>{</p>
+        <p><br></p>
+        <div class="small indent-left">
+            <p>&quot;instructedAmount&quot;: {&quot;currency&quot;: &quot;EUR&quot;, &quot;amount&quot;: &quot;123&quot;},</p>
+            <p>&quot;debtorAccount&quot;: { &quot;iban&quot;: &quot;DE2310010010123456789&quot;},</p>
+            <p>&quot;creditor&quot;: { &quot;name&quot;: &quot;Merchant123&quot;},</p>
+            <p>&quot;creditorAccount&quot;: {&quot;iban&quot;: &quot;DE23100120020123456789&quot;},</p>
+            <p>&quot;remittanceInformationUnstructured&quot;: &quot;Ref Number Merchant&quot;</p>
+            <p>}</p>
+        </div>
+    </div>
+    <p>Where signing string is:</p>
+    <div class="code">
+        <p>digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=</p>
+        <p>x-request-id: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721</p>
+        <p>psu-id: PSU-1234</p>
+        <p>tpp-redirect-uri:</p>
+        <p>https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb&amp;code_Cchallenge_Mmethod=&quot;S256&quot;</p>
+        <p>date: Sun, 06 Aug 2017 15:02:37 GMT</p>
+    </div>
+    <h2>Consent Request on Dedicated Accounts </h2>
+    <p>Service allows to obtain consent for User&rsquo;s data access</p>
+    <p class="code">POST [host]/v1/consents</p>
+    <h3>Request</h3>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <td>Section</td>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>-</td>
+            <td>TPP-Redirect-URI</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>?</td>
+            <td>Link for positive response <a>https://tpp.calling.resource.com/OK_redirect</a></td>
+        </tr>
+        <tr>
+            <td>-</td>
+            <td>TPP-Nok-Redirect-URI</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>?</td>
+            <td>Link for negative response <a>https://tpp.calling.resource.com/NOK_redirect</a></td>
+        </tr>
+        <tr>
+            <td>balances</td>
+            <td>iban</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>34</td>
+            <td>List of IBANs to which third party is asking access to view balance</td>
+        </tr>
+        <tr>
+            <td>transactions</td>
+            <td>iban</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>34</td>
+            <td>List of IBANs to which third party is asking access to view transactions</td>
+        </tr>
+        <tr>
+            <td>-</td>
+            <td>recurringIndicator</td>
+            <td>B</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>-</td>
+            <td><p>true, if the consent is for recurring access to the account data </p>
+                <p>false, if the consent is for one access to the account data </p></td>
+        </tr>
+        <tr>
+            <td>-</td>
+            <td>validUntil</td>
+            <td>D</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>-</td>
+            <td><p>This parameter is requesting a valid until date for the requested consent. The content is the local
+                   ASPSP date in ISODate Format, e.g. 2017-10-30. </p>
+                <p>If a maximal available date is requested, a date in far future is to be used: &quot;9999-12-31&quot;.
+                   The consent object to be retrieved by the GET Consent Request will contain the date adjusted by
+                   DiPocket. Working assumption is that DiPocket should cut the requested time to 1 year max.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>-</td>
+            <td>frequencyPerDay</td>
+            <td>N</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>?</td>
+            <td>This field indicates the requested maximum frequency for an access per day. For a one-off access, this
+                attribute is set to &quot;1&quot;.
+            </td>
+        </tr>
+    </table>
+    <h3>Response</h3>
+    <table class="table table-striped table-bordered">
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>ASPSP-SCA-Approach</td>
+            <td>V</td>
+            <td>NO</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Constant value = REDIRECT</td>
+        </tr>
+        <tr>
+            <td>Location</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>?</td>
+            <td>unique resource per consent created by DiPocket</td>
+        </tr>
+        <tr>
+            <td>consentStatus</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>?</td>
+            <td>
+                <p>received - The consent data have been received and are technically correct. The data is not
+                   authorised yet. rejected - The consent data have been rejected e.g. since no successful authorisation
+                   has taken place. valid - The consent is accepted and valid for GET account data calls and others as
+                   specified in the consent object. </p>
+                <p>revokedByPsu - The consent has been revoked by the PSU towards the ASPSP. </p>
+                <p>expired - The consent expired. </p>
+                <p>terminatedByTpp - The corresponding TPP has terminated the consent by applying the DELETE method to
+                   the consent resource. </p></td>
+        </tr>
+        <tr>
+            <td>consentId</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>?</td>
+            <td>Unique Id of created consent</td>
+        </tr>
+        <tr>
+            <td>scaRedirect</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>?</td>
+            <td>Link to customer authentication page https://api.dipocket.org/authentication/1234-wertiq-983</td>
+        </tr>
+        <tr>
+            <td>status</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>?</td>
+            <td>Path to consent status service /v1/consents/1234-wertiq-983/status</td>
+        </tr>
+        <tr>
+            <td>responseCode</td>
+            <td>N</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>3</td>
+            <td><a>List of the Response codes</a></td>
+        </tr>
+    </table>
+    <h3>Request </h3>
+    <div class="code" style="overflow-wrap: break-word;">
+        <p>POST [host]/OpenBankingServices/v1/consents HTTP/1.1</p>
+        <p>Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
+           JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9</p>
+        <p>Content-Type: application/json</p>
+        <p>Tpp-Redirect-Uri: TPP-Redirect-URITEST</p>
+        <p>Tpp-Nok-Redirect-Uri: TPP-Nok-Redirect-URITEST</p>
+        <p>Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=</p>
+        <p>Signature: keyId=&quot;SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E&quot;,algorithm=&quot;rsa-sha256&quot;,headers=&quot;Digest
+           X-Request-ID PSU-ID TPP-Redirect-URI Date&quot;,signature=&quot;Base64(RSA-SHA256(signing string))&quot;</p>
+        <p>Tpp-Signature-Certificate:
+           MIIElDCCA3ygAwIBAgIJAIX2W+2EDxehMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAkZSMQswCQYDVQQIEwJGUjETMBEGA1UEChMKQ2VydEV1cm9wZTETMBEGA1UEAxMKQ2VydEV1cm9wZTAeFw0xOTAyMTkxNTIyMDdaFw0yMDAyMTkxNTIyMDdaMIGFMQswCQYDVQQGEwJHQjErMCkGA1UECgwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDErMCkGA1UEAwwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDEcMBoGA1UEYQwTUFNER0ItRkNBLWt0LTQ4NDM0NzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMoLgXDQ+nditYb2tTwxtDnDk5sOPIJyHgeN6omgcOmbmad9+b9PPknWcCdNuyruv0keIv5A8592j8IxIzF3RaNH0OE+SLzFMuAz2xRbA2BrD6q1XPcML5H4lkmEuYGuH+Xtv9zIaTtPQxapQmruUPDHD3+9MjmyyHpkyrRnqQ2JG+df7CEeD9eN53DU7B4u2MgXiibQcyWk2dk+KpGSIssOZA5+aetWs29aD6BJUUOt492UeLIMZAtlGZzF+I5ASMiXzL4wnUSOOLmSfTIsSVm7ChebZe6b7PuY/k3kBw2rrTNhHGWqYPpyzkri9lPhtICe/12r8Mze3UIOZ3QHghMCAwEAAaOCAUUwggFBMAkGA1UdEwQCMAAwHQYDVR0OBBYEFB2DbT6Y4KSVWTsDRIaIet6L0XCCMB8GA1UdIwQYMBaAFNINLe/phgwefLhOutKprennyA1PMAkGA1UdEQQCMAAwUgYDVR0fBEswSTBHoEWgQ4ZBaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS5jcmwwgYcGCCsGAQUFBwEBBHsweTAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Aua29uc2VudHVzLmNvbTBQBggrBgEFBQcwAoZEaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS1jYS5kZXIwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4IBAQAFrsonr/NNN2Hl9EBB+aAhB3exNnDXCOM8eqoDnwTA3A5Nyj5gXq2cy5s8S2CjAodj9yG3ZQdAxN/MVlZ909cmZC87M87KGw0x1LkfF5M65nMz5ynx6NeCASO0uqNkt4yKrT6EDuq7E8hoFteYQ6z4xMKX3NZ2KzIE8EWxuHOYPSjEbCeYea4ACTThOlPeFgWFMTs/oRXMkDRTcFcWthEaUKiFRJsqGMKZNp++q9gOAcB84H6+PekbieZKHxNEXTiFIwKMhCQ/FI8kwhdJxq8iBRc++fCkZ/HfS0ezYQoUaCfGckZpS6HK8TKP/HHNe/TCxS1xFVkO1k8cNK5ZFjQp</p>
+        <p>Psu-Ip-Address: 192.168.1.1</p>
+        <p>Psu-Id: testtppid</p>
+        <p>User-Agent: PostmanRuntime/7.16.3</p>
+        <p>Accept: */*</p>
+        <p>Host: lvov.csltd.com.ua</p>
+        <p>Accept-Encoding: gzip, deflate</p>
+        <p>Content-Length: 243</p>
+        <p>Connection: keep-alive</p>
+        <p>{</p>
+        <div class="indent-left">
+            <p>&quot;access&quot;: {</p>
+            <p>&quot;balances&quot;: [</p>
+            <p>{ &quot;iban&quot;: &quot;PL28124069604103380992567879&quot;}</p>
+            <p>],</p>
+            <p>&quot;transactions&quot;: [</p>
+            <p>{ &quot;iban&quot;: &quot;PL28124069604103380992567879&quot; }</p>
+            <p>]</p>
+            <p>},</p>
+            <p>&quot;recurringIndicator&quot;: true,</p>
+            <p>&quot;validUntil&quot;: &quot;2020-11-01&quot;,</p>
+            <p>&quot;frequencyPerDay&quot;: &quot;4&quot;</p>
+        </div>
+        <p>}</p>
+    </div>
+    <h3>Response </h3>
+    <div class="code">
+        <p>HTTP/1.1 201 Created</p>
+        <p>Server: nginx/1.12.2</p>
+        <p>Date: Wed, 11 Sep 2019 12:14:42 GMT</p>
+        <p>Content-Type: application/json;charset=UTF-8</p>
+        <p>Transfer-Encoding: chunked</p>
+        <p>Connection: keep-alive</p>
+        <p>ASPSP-SCA-Approach: REDIRECT</p>
+        <p>Location: /v1/consents/WK48GZFITTYLSC6</p>
+        <p>X-Content-Type-Options: nosniff</p>
+        <p>X-XSS-Protection: 1; mode=block</p>
+        <p>Cache-Control: no-cache, no-store, max-age=0, must-revalidate</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Pragma: no-cache</p>
+        <p>Expires: 0</p>
+        <p>Strict-Transport-Security: max-age=31536000 ; includeSubDomains</p>
+        <p>X-Frame-Options: DENY</p>
+        <p>{</p>
+        <div class="indent-left">
+            <p>&quot;consentId&quot;: &quot;WK48GZFITTYLSC6&quot;,</p>
+            <p>&quot;consentStatus&quot;: &quot;received&quot;,</p>
+            <p>&quot;_links&quot;: {</p>
+            <p>&quot;scaRedirect&quot;: {</p>
+            <p>&quot;href&quot;: &quot;https://api.dipocket.org/authentication/WK48GZFITTYLSC6&quot;</p>
+        </div>
+        <p>}</p>
+        <p>},</p>
+        <div class="indent-left">
+            <p>&quot;status&quot;: {</p>
+            <p>&quot;href&quot;: &quot;/v1/consents/WK48GZFITTYLSC6/status&quot;</p>
+        </div>
+        <p>}</p>
+        <p>}</p>
+    </div>
+    <h2>Get Consent Status Request</h2>
+    <p>Service returns status of the consent</p>
+    <p class="code">GET [host]/OpenBankingServices/v1/consents/[consentId]/status</p>
+    <h4>Request</h4>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>Consent-ID</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>?</td>
+            <td></td>
+        </tr>
+    </table>
+    <h4>Response</h4>
+    <table class="table table-striped table-bordered">
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>consentStatus</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>?</td>
+            <td>
+                <p>received - The consent data have been received and are technically correct. The data is not
+                   authorised yet. rejected - The consent data have been rejected e.g. since no successful authorisation
+                   has taken place. valid - The consent is accepted and valid for GET account data calls and others as
+                   specified in the consent object. </p>
+                <p>revokedByPsu - The consent has been revoked by the PSU towards the ASPSP. </p>
+                <p>expired - The consent expired. </p>
+                <p>terminatedByTpp - The corresponding TPP has terminated the consent by applying the DELETE method to
+                   the consent resource. </p></td>
+        </tr>
+    </table>
+    <h4>Request </h4>
+    <p class="code">GET [host]/OpenBankingServices/v1/consents/[consentId]/status HTTP/1.1</p>
+    <div class="code">
+        <p>Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
+           JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9</p>
+        <p>Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=</p>
+        <p>Signature: keyId=&quot;SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E&quot;,algorithm=&quot;rsa-sha256&quot;,headers=&quot;Digest
+           X-Request-ID PSU-ID TPP-Redirect-URI Date&quot;,signature=&quot;Base64(RSA-SHA256(signing string))&quot;</p>
+        <p>Tpp-Signature-Certificate:
+           MIIElDCCA3ygAwIBAgIJAIX2W+2EDxehMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAkZSMQswCQYDVQQIEwJGUjETMBEGA1UEChMKQ2VydEV1cm9wZTETMBEGA1UEAxMKQ2VydEV1cm9wZTAeFw0xOTAyMTkxNTIyMDdaFw0yMDAyMTkxNTIyMDdaMIGFMQswCQYDVQQGEwJHQjErMCkGA1UECgwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDErMCkGA1UEAwwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDEcMBoGA1UEYQwTUFNER0ItRkNBLWt0LTQ4NDM0NzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMoLgXDQ+nditYb2tTwxtDnDk5sOPIJyHgeN6omgcOmbmad9+b9PPknWcCdNuyruv0keIv5A8592j8IxIzF3RaNH0OE+SLzFMuAz2xRbA2BrD6q1XPcML5H4lkmEuYGuH+Xtv9zIaTtPQxapQmruUPDHD3+9MjmyyHpkyrRnqQ2JG+df7CEeD9eN53DU7B4u2MgXiibQcyWk2dk+KpGSIssOZA5+aetWs29aD6BJUUOt492UeLIMZAtlGZzF+I5ASMiXzL4wnUSOOLmSfTIsSVm7ChebZe6b7PuY/k3kBw2rrTNhHGWqYPpyzkri9lPhtICe/12r8Mze3UIOZ3QHghMCAwEAAaOCAUUwggFBMAkGA1UdEwQCMAAwHQYDVR0OBBYEFB2DbT6Y4KSVWTsDRIaIet6L0XCCMB8GA1UdIwQYMBaAFNINLe/phgwefLhOutKprennyA1PMAkGA1UdEQQCMAAwUgYDVR0fBEswSTBHoEWgQ4ZBaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS5jcmwwgYcGCCsGAQUFBwEBBHsweTAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Aua29uc2VudHVzLmNvbTBQBggrBgEFBQcwAoZEaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS1jYS5kZXIwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4IBAQAFrsonr/NNN2Hl9EBB+aAhB3exNnDXCOM8eqoDnwTA3A5Nyj5gXq2cy5s8S2CjAodj9yG3ZQdAxN/MVlZ909cmZC87M87KGw0x1LkfF5M65nMz5ynx6NeCASO0uqNkt4yKrT6EDuq7E8hoFteYQ6z4xMKX3NZ2KzIE8EWxuHOYPSjEbCeYea4ACTThOlPeFgWFMTs/oRXMkDRTcFcWthEaUKiFRJsqGMKZNp++q9gOAcB84H6+PekbieZKHxNEXTiFIwKMhCQ/FI8kwhdJxq8iBRc++fCkZ/HfS0ezYQoUaCfGckZpS6HK8TKP/HHNe/TCxS1xFVkO1k8cNK5ZFjQp</p>
+        <p>Psu-Ip-Address: 192.168.1.1</p>
+        <p>Psu-Id: testtppid</p>
+        <p>Tpp-Redirect-Uri: TPP-Redirect-URITEST</p>
+        <p>User-Agent: PostmanRuntime/7.16.3</p>
+        <p>Accept: */*</p>
+        <p>Host: lvov.csltd.com.ua</p>
+        <p>Accept-Encoding: gzip, deflate</p>
+        <p>Connection: keep-alive</p>
+    </div>
+    <h4>Response </h4>
+    <div class="code">
+        <p>HTTP/1.1 200 OK</p>
+        <p>Server: nginx/1.12.2</p>
+        <p>Date: Wed, 11 Sep 2019 12:19:04 GMT</p>
+        <p>Content-Type: application/json;charset=UTF-8</p>
+        <p>Transfer-Encoding: chunked</p>
+        <p>Connection: keep-alive</p>
+        <p>X-Content-Type-Options: nosniff</p>
+        <p>X-XSS-Protection: 1; mode=block</p>
+        <p>Cache-Control: no-cache, no-store, max-age=0, must-revalidate</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Pragma: no-cache</p>
+        <p>Expires: 0</p>
+        <p>Strict-Transport-Security: max-age=31536000 ; includeSubDomains</p>
+        <p>X-Frame-Options: DENY</p>
+        <p>{ &quot;consentStatus&quot;: &quot;received&quot; }</p>
+        <h2>Get Consent Request</h2>
+        <p>Service shows list of IBANs available to access by provided Consent ID and consent details. </p>
+        <p>GET [host]/OpenBankingServices/v1/consents/[consentId] HTTP/1.1</p>
+    </div>
+    <h4>Request</h4>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>Consent-ID</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>?</td>
+            <td></td>
+        </tr>
+    </table>
+    <h4>Response</h4>
+    <table class="table table-striped table-bordered">
+        <tr>
+            <td>Section</td>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>balances</td>
+            <td>iban</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>34</td>
+            <td>List of IBANs to which third party has access to view balance</td>
+        </tr>
+        <tr>
+            <td>transactions</td>
+            <td>iban</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>34</td>
+            <td>List of IBANs to which third party has access to view transactions</td>
+        </tr>
+        <tr>
+            <td>-</td>
+            <td>recurringIndicator</td>
+            <td>B</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>-</td>
+            <td><p>true, if the consent is for recurring access to the account data </p>
+                <p>false, if the consent is for one access to the account data </p></td>
+        </tr>
+        <tr>
+            <td>-</td>
+            <td>validUntil</td>
+            <td>D</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>-</td>
+            <td><p>This parameter is requesting a valid until date for the requested consent. The content is the local
+                   ASPSP date in ISODate Format, e.g. 2017-10-30. </p>
+                <p>If a maximal available date is requested, a date in far future is to be used: &quot;9999-12-31&quot;.
+                   The consent object to be retrieved by the GET Consent Request will contain the date adjusted by
+                   DiPocket. Working assumption is that DiPocket should cut the requested time to 1 year max.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>-</td>
+            <td>frequencyPerDay</td>
+            <td>N</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>?</td>
+            <td>This field indicates the requested maximum frequency for an access per day. For a one-off access, this
+                attribute is set to &quot;1&quot;.
+            </td>
+        </tr>
+        <tr>
+            <td>-</td>
+            <td>consentStatus</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>?</td>
+            <td>
+                <p>received - The consent data have been received and are technically correct. The data is not
+                   authorised yet. rejected - The consent data have been rejected e.g. since no successful authorisation
+                   has taken place. valid - The consent is accepted and valid for GET account data calls and others as
+                   specified in the consent object. </p>
+                <p>revokedByPsu - The consent has been revoked by the PSU towards the ASPSP. </p>
+                <p>expired - The consent expired. </p>
+                <p>terminatedByTpp - The corresponding TPP has terminated the consent by applying the DELETE method to
+                   the consent resource. </p></td>
+        </tr>
+        <tr>
+            <td>-</td>
+            <td>account</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>?</td>
+            <td>Path for accounts service /v1/accounts</td>
+        </tr>
+    </table>
+    <p></p>
+    <h4>Example</h4>
+    <p class="code">GET [host]/OpenBankingServices/v1/consents/[consentId] HTTP/1.1</p>
+    <div class="code">
+        <p>Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
+           JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9</p>
+        <p>Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=</p>
+        <p>Signature: keyId=&quot;SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E&quot;,algorithm=&quot;rsa-sha256&quot;,headers=&quot;Digest
+           X-Request-ID PSU-ID TPP-Redirect-URI Date&quot;,signature=&quot;Base64(RSA-SHA256(signing string))&quot;</p>
+        <p>Tpp-Signature-Certificate:
+           MIIElDCCA3ygAwIBAgIJAIX2W+2EDxehMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAkZSMQswCQYDVQQIEwJGUjETMBEGA1UEChMKQ2VydEV1cm9wZTETMBEGA1UEAxMKQ2VydEV1cm9wZTAeFw0xOTAyMTkxNTIyMDdaFw0yMDAyMTkxNTIyMDdaMIGFMQswCQYDVQQGEwJHQjErMCkGA1UECgwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDErMCkGA1UEAwwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDEcMBoGA1UEYQwTUFNER0ItRkNBLWt0LTQ4NDM0NzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMoLgXDQ+nditYb2tTwxtDnDk5sOPIJyHgeN6omgcOmbmad9+b9PPknWcCdNuyruv0keIv5A8592j8IxIzF3RaNH0OE+SLzFMuAz2xRbA2BrD6q1XPcML5H4lkmEuYGuH+Xtv9zIaTtPQxapQmruUPDHD3+9MjmyyHpkyrRnqQ2JG+df7CEeD9eN53DU7B4u2MgXiibQcyWk2dk+KpGSIssOZA5+aetWs29aD6BJUUOt492UeLIMZAtlGZzF+I5ASMiXzL4wnUSOOLmSfTIsSVm7ChebZe6b7PuY/k3kBw2rrTNhHGWqYPpyzkri9lPhtICe/12r8Mze3UIOZ3QHghMCAwEAAaOCAUUwggFBMAkGA1UdEwQCMAAwHQYDVR0OBBYEFB2DbT6Y4KSVWTsDRIaIet6L0XCCMB8GA1UdIwQYMBaAFNINLe/phgwefLhOutKprennyA1PMAkGA1UdEQQCMAAwUgYDVR0fBEswSTBHoEWgQ4ZBaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS5jcmwwgYcGCCsGAQUFBwEBBHsweTAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Aua29uc2VudHVzLmNvbTBQBggrBgEFBQcwAoZEaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS1jYS5kZXIwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4IBAQAFrsonr/NNN2Hl9EBB+aAhB3exNnDXCOM8eqoDnwTA3A5Nyj5gXq2cy5s8S2CjAodj9yG3ZQdAxN/MVlZ909cmZC87M87KGw0x1LkfF5M65nMz5ynx6NeCASO0uqNkt4yKrT6EDuq7E8hoFteYQ6z4xMKX3NZ2KzIE8EWxuHOYPSjEbCeYea4ACTThOlPeFgWFMTs/oRXMkDRTcFcWthEaUKiFRJsqGMKZNp++q9gOAcB84H6+PekbieZKHxNEXTiFIwKMhCQ/FI8kwhdJxq8iBRc++fCkZ/HfS0ezYQoUaCfGckZpS6HK8TKP/HHNe/TCxS1xFVkO1k8cNK5ZFjQp</p>
+        <p>Psu-Ip-Address: 192.168.1.1</p>
+        <p>Psu-Id: testtppid</p>
+        <p>Tpp-Redirect-Uri: TPP-Redirect-URITEST</p>
+        <p>User-Agent: PostmanRuntime/7.16.3</p>
+        <p>Accept: */*</p>
+        <p>Host: lvov.csltd.com.ua</p>
+        <p>Accept-Encoding: gzip, deflate</p>
+        <p>Connection: keep-alive</p>
+    </div>
+    <h4>Response </h4>
+    <div class="code">
+        <p>HTTP/1.1 200 OK</p>
+        <p>Server: nginx/1.12.2</p>
+        <p>Date: Wed, 11 Sep 2019 12:22:46 GMT</p>
+        <p>Content-Type: application/json;charset=UTF-8</p>
+        <p>Transfer-Encoding: chunked</p>
+        <p>Connection: keep-alive</p>
+        <p>X-Content-Type-Options: nosniff</p>
+        <p>X-XSS-Protection: 1; mode=block</p>
+        <p>Cache-Control: no-cache, no-store, max-age=0, must-revalidate</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Pragma: no-cache</p>
+        <p>Expires: 0</p>
+        <p>Strict-Transport-Security: max-age=31536000 ; includeSubDomains</p>
+        <p>X-Frame-Options: DENY</p>
+        <p></p>
+        <p>{</p>
+        <div class="indent-left">
+            <p>&quot;access&quot;: {</p>
+            <p>&quot;balances&quot;: [</p>
+            <p>{</p>
+            <p>&quot;iban&quot;: &quot;PL29124069604103800000004864&quot;</p>
+            <p>},</p>
+            <p>{</p>
+            <p>&quot;iban&quot;: &quot;PL32124069604100800000004863&quot;</p>
+            <p>}</p>
+            <p>],</p>
+            <p>&quot;transactions&quot;: [</p>
+            <p>{</p>
+            <p>&quot;iban&quot;: &quot;PL32124069604100800000004863&quot;</p>
+            <p>}</p>
+            <p>]</p>
+            <p>},</p>
+            <p>&quot;recurringIndicator&quot;: true,</p>
+            <p>&quot;validUntil&quot;: &quot;2019-10-20&quot;,</p>
+            <p>&quot;frequencyPerDay&quot;: 5,</p>
+            <p>&quot;consentStatus&quot;: &quot;valid&quot;,</p>
+            <p>&quot;_links&quot;: {</p>
+            <p>&quot;account&quot;: {</p>
+            <p>&quot;href&quot;: &quot;/v1/accounts&quot;</p>
+            <p>}</p>
+            <p>}</p>
+            <p>}</p>
+        </div>
+    </div>
+    <h2>Delete an Account Information Consent Object</h2>
+    <p>Service allows to change status of consent to &lsquo;terminatedByTpp&rsquo;</p>
+    <p class="code">DELETE [host]/OpenBankingServices/v1/consents/[consentId]</p>
+    <h4>Request</h4>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>Consent-ID</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>?</td>
+            <td>Consent ID which should be deleted</td>
+        </tr>
+    </table>
+    <p class="code">Response HTTP/1.x 204 No Content </p>
+    <h3>Example </h3>
+    <h4>Request </h4>
+    <p class="code">DELETE [host]/OpenBankingServices/v1/consents/[consentId] HTTP/1.1</p>
+    <div class="code">
+        <p>Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
+           JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9</p>
+        <p>Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=</p>
+        <p>Signature: keyId=&quot;SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E&quot;,algorithm=&quot;rsa-sha256&quot;,headers=&quot;Digest
+           X-Request-ID PSU-ID TPP-Redirect-URI Date&quot;,signature=&quot;Base64(RSA-SHA256(signing string))&quot;</p>
+        <p>Tpp-Signature-Certificate:
+           MIIElDCCA3ygAwIBAgIJAIX2W+2EDxehMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAkZSMQswCQYDVQQIEwJGUjETMBEGA1UEChMKQ2VydEV1cm9wZTETMBEGA1UEAxMKQ2VydEV1cm9wZTAeFw0xOTAyMTkxNTIyMDdaFw0yMDAyMTkxNTIyMDdaMIGFMQswCQYDVQQGEwJHQjErMCkGA1UECgwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDErMCkGA1UEAwwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDEcMBoGA1UEYQwTUFNER0ItRkNBLWt0LTQ4NDM0NzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMoLgXDQ+nditYb2tTwxtDnDk5sOPIJyHgeN6omgcOmbmad9+b9PPknWcCdNuyruv0keIv5A8592j8IxIzF3RaNH0OE+SLzFMuAz2xRbA2BrD6q1XPcML5H4lkmEuYGuH+Xtv9zIaTtPQxapQmruUPDHD3+9MjmyyHpkyrRnqQ2JG+df7CEeD9eN53DU7B4u2MgXiibQcyWk2dk+KpGSIssOZA5+aetWs29aD6BJUUOt492UeLIMZAtlGZzF+I5ASMiXzL4wnUSOOLmSfTIsSVm7ChebZe6b7PuY/k3kBw2rrTNhHGWqYPpyzkri9lPhtICe/12r8Mze3UIOZ3QHghMCAwEAAaOCAUUwggFBMAkGA1UdEwQCMAAwHQYDVR0OBBYEFB2DbT6Y4KSVWTsDRIaIet6L0XCCMB8GA1UdIwQYMBaAFNINLe/phgwefLhOutKprennyA1PMAkGA1UdEQQCMAAwUgYDVR0fBEswSTBHoEWgQ4ZBaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS5jcmwwgYcGCCsGAQUFBwEBBHsweTAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Aua29uc2VudHVzLmNvbTBQBggrBgEFBQcwAoZEaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS1jYS5kZXIwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4IBAQAFrsonr/NNN2Hl9EBB+aAhB3exNnDXCOM8eqoDnwTA3A5Nyj5gXq2cy5s8S2CjAodj9yG3ZQdAxN/MVlZ909cmZC87M87KGw0x1LkfF5M65nMz5ynx6NeCASO0uqNkt4yKrT6EDuq7E8hoFteYQ6z4xMKX3NZ2KzIE8EWxuHOYPSjEbCeYea4ACTThOlPeFgWFMTs/oRXMkDRTcFcWthEaUKiFRJsqGMKZNp++q9gOAcB84H6+PekbieZKHxNEXTiFIwKMhCQ/FI8kwhdJxq8iBRc++fCkZ/HfS0ezYQoUaCfGckZpS6HK8TKP/HHNe/TCxS1xFVkO1k8cNK5ZFjQp</p>
+        <p>Psu-Ip-Address: 192.168.1.1</p>
+        <p>Psu-Id: testtppid</p>
+        <p>Tpp-Redirect-Uri: TPP-Redirect-URITEST</p>
+        <p>User-Agent: PostmanRuntime/7.16.3</p>
+        <p>Accept: */*</p>
+        <p>Host: lvov.csltd.com.ua</p>
+        <p>Accept-Encoding: gzip, deflate</p>
+        <p>Content-Length:</p>
+        <p>Connection: keep-alive</p>
+    </div>
+    <h4>Response </h4>
+    <div class="code">
+        <p>HTTP/1.1 204 No Content</p>
+        <p>Server: nginx/1.12.2</p>
+        <p>Date: Wed, 11 Sep 2019 12:29:59 GMT</p>
+        <p>Connection: keep-alive</p>
+        <p>X-Content-Type-Options: nosniff</p>
+        <p>X-XSS-Protection: 1; mode=block</p>
+        <p>Cache-Control: no-cache, no-store, max-age=0, must-revalidate</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Pragma: no-cache</p>
+        <p>Expires: 0</p>
+        <p>Strict-Transport-Security: max-age=31536000 ; includeSubDomains</p>
+        <p>X-Frame-Options: DENY</p>
+    </div>
+    <h2>Read Account List</h2>
+    <p>Service shows list of accounts which are available by provided consent ID and level of access for each</p>
+    <p class="code">GET [host]/OpenBankingServices/v1/accounts</p>
+    <h4>Request</h4>
+    <table>
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>Consent-ID</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>?</td>
+            <td></td>
+        </tr>
+    </table>
+    <h4>Response</h4>
+    <table>
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>iban</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>34</td>
+            <td>List of IBANs to which third party has access</td>
+        </tr>
+        <tr>
+            <td>currency</td>
+            <td>A</td>
+            <td>YES</td>
+            <td>3</td>
+            <td>3</td>
+            <td>ISO 4217 alphabetic code; Account currency code</td>
+        </tr>
+        <tr>
+            <td>name</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>30</td>
+            <td>Account name</td>
+        </tr>
+        <tr>
+            <td>balances</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>?</td>
+            <td>Path for balances service /v1/accounts/ FR7612345987650123456789014/balances</td>
+        </tr>
+        <tr>
+            <td>transactions</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>?</td>
+            <td>Path for transactions service /v1/accounts/ FR7612345987650123456789014/transactions</td>
+        </tr>
+    </table>
+    <h4>Request </h4>
+    <div class="code">
+        <p class="font-weight-bold">GET [host]/OpenBankingServices/v1/accounts HTTP/1.1</p>
+        <p>Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
+           JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9</p>
+        <p>Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=</p>
+        <p>Signature: keyId=&quot;SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E&quot;,algorithm=&quot;rsa-sha256&quot;,headers=&quot;Digest
+           X-Request-ID PSU-ID TPP-Redirect-URI Date&quot;,signature=&quot;Base64(RSA-SHA256(signing string))&quot;</p>
+        <p>Tpp-Signature-Certificate:
+           MIIElDCCA3ygAwIBAgIJAIX2W+2EDxehMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAkZSMQswCQYDVQQIEwJGUjETMBEGA1UEChMKQ2VydEV1cm9wZTETMBEGA1UEAxMKQ2VydEV1cm9wZTAeFw0xOTAyMTkxNTIyMDdaFw0yMDAyMTkxNTIyMDdaMIGFMQswCQYDVQQGEwJHQjErMCkGA1UECgwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDErMCkGA1UEAwwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDEcMBoGA1UEYQwTUFNER0ItRkNBLWt0LTQ4NDM0NzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMoLgXDQ+nditYb2tTwxtDnDk5sOPIJyHgeN6omgcOmbmad9+b9PPknWcCdNuyruv0keIv5A8592j8IxIzF3RaNH0OE+SLzFMuAz2xRbA2BrD6q1XPcML5H4lkmEuYGuH+Xtv9zIaTtPQxapQmruUPDHD3+9MjmyyHpkyrRnqQ2JG+df7CEeD9eN53DU7B4u2MgXiibQcyWk2dk+KpGSIssOZA5+aetWs29aD6BJUUOt492UeLIMZAtlGZzF+I5ASMiXzL4wnUSOOLmSfTIsSVm7ChebZe6b7PuY/k3kBw2rrTNhHGWqYPpyzkri9lPhtICe/12r8Mze3UIOZ3QHghMCAwEAAaOCAUUwggFBMAkGA1UdEwQCMAAwHQYDVR0OBBYEFB2DbT6Y4KSVWTsDRIaIet6L0XCCMB8GA1UdIwQYMBaAFNINLe/phgwefLhOutKprennyA1PMAkGA1UdEQQCMAAwUgYDVR0fBEswSTBHoEWgQ4ZBaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS5jcmwwgYcGCCsGAQUFBwEBBHsweTAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Aua29uc2VudHVzLmNvbTBQBggrBgEFBQcwAoZEaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS1jYS5kZXIwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4IBAQAFrsonr/NNN2Hl9EBB+aAhB3exNnDXCOM8eqoDnwTA3A5Nyj5gXq2cy5s8S2CjAodj9yG3ZQdAxN/MVlZ909cmZC87M87KGw0x1LkfF5M65nMz5ynx6NeCASO0uqNkt4yKrT6EDuq7E8hoFteYQ6z4xMKX3NZ2KzIE8EWxuHOYPSjEbCeYea4ACTThOlPeFgWFMTs/oRXMkDRTcFcWthEaUKiFRJsqGMKZNp++q9gOAcB84H6+PekbieZKHxNEXTiFIwKMhCQ/FI8kwhdJxq8iBRc++fCkZ/HfS0ezYQoUaCfGckZpS6HK8TKP/HHNe/TCxS1xFVkO1k8cNK5ZFjQp</p>
+        <p>Psu-Ip-Address: 192.168.1.1</p>
+        <p>Psu-Id: testtppid</p>
+        <p>Consent-ID: KNL2UQ7S7JS3MH3</p>
+        <p>User-Agent: PostmanRuntime/7.16.3</p>
+        <p>Accept: */*</p>
+        <p>Host: lvov.csltd.com.ua</p>
+        <p>Accept-Encoding: gzip, deflate</p>
+        <p>Connection: keep-alive</p>
+    </div>
+    <h4>Response</h4>
+    <div class="code">
+        <p>HTTP/1.1 200 OK</p>
+        <p>Server: nginx/1.12.2</p>
+        <p>Date: Wed, 11 Sep 2019 12:32:40 GMT</p>
+        <p>Content-Type: application/json;charset=UTF-8</p>
+        <p>Transfer-Encoding: chunked</p>
+        <p>Connection: keep-alive</p>
+        <p>X-Content-Type-Options: nosniff</p>
+        <p>X-XSS-Protection: 1; mode=block</p>
+        <p>Cache-Control: no-cache, no-store, max-age=0, must-revalidate</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Pragma: no-cache</p>
+        <p>Expires: 0</p>
+        <p>Strict-Transport-Security: max-age=31536000 ; includeSubDomains</p>
+        <p>X-Frame-Options: DENY</p>
+        <p>{</p>
+        <p>&quot;accounts&quot;: [</p>
+        <p>{</p>
+        <p>&quot;iban&quot;: &quot;PL32124069604100800000004863&quot;,</p>
+        <p>&quot;currency&quot;: &quot;PLN&quot;,</p>
+        <p>&quot;name&quot;: &quot;Main Account&quot;,</p>
+        <p>&quot;_links&quot;: {</p>
+        <p>&quot;balances&quot;: {</p>
+        <p>&quot;href&quot;: &quot;/v1/accounts/PL32124069604100800000004863/balances&quot;</p>
+        <p>},</p>
+        <p>&quot;transactions&quot;: {</p>
+        <p>&quot;href&quot;: &quot;/v1/accounts/PL32124069604100800000004863/transactions&quot;</p>
+        <p>}</p>
+        <p>}</p>
+        <p>},</p>
+        <p>{</p>
+        <p>&quot;iban&quot;: &quot;PL29124069604103800000004864&quot;,</p>
+        <p>&quot;currency&quot;: &quot;GBP&quot;,</p>
+        <p>&quot;name&quot;: &quot;GBP Account&quot;,</p>
+        <p>&quot;_links&quot;: {</p>
+        <p>&quot;balances&quot;: {</p>
+        <p>&quot;href&quot;: &quot;/v1/accounts/PL29124069604103800000004864/balances&quot;</p>
+        <p>}</p>
+        <p>}</p>
+        <p>}</p>
+        <p>]</p>
+        <p>}</p>
+    </div>
+    <h2>Read Account Details</h2>
+    <p>Service shows details of account and level of access to it</p>
+    <div class="code">
+        <p class="font-weight-bold">GET [host]/OpenBankingServices/v1/accounts/[iban]</p>
+    </div>
+    <h4>Request</h4>
+    <table class="table-striped table table-bordered">
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>Consent-ID</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>?</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>iban</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>34</td>
+            <td>IBAN</td>
+        </tr>
+    </table>
+    <h4>Response</h4>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>iban</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>34</td>
+            <td>IBAN</td>
+        </tr>
+        <tr>
+            <td>currency</td>
+            <td>A</td>
+            <td>YES</td>
+            <td>3</td>
+            <td>3</td>
+            <td>ISO 4217 alphabetic code; Account currency code</td>
+        </tr>
+        <tr>
+            <td>name</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>30</td>
+            <td>Account name</td>
+        </tr>
+        <tr>
+            <td>balances</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>?</td>
+            <td>Link to balances service /v1/accounts/ FR7612345987650123456789014/balances</td>
+        </tr>
+        <tr>
+            <td>transactions</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>?</td>
+            <td>Link to transactions service /v1/accounts/ FR7612345987650123456789014/transactions</td>
+        </tr>
+    </table>
+    <h4>Request </h4>
+    <div class="code">
+        <p class="font-weight-bold">GET [host]/OpenBankingServices/v1/accounts/[iban] HTTP/1.1</p>
+        <p>Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
+           JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9</p>
+        <p>Consent-Id: KNL2UQ7S7JS3MH3</p>
+        <p>Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=</p>
+        <p>Signature: keyId=&quot;SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E&quot;,algorithm=&quot;rsa-sha256&quot;,headers=&quot;Digest
+           X-Request-ID PSU-ID TPP-Redirect-URI Date&quot;,signature=&quot;Base64(RSA-SHA256(signing string))&quot;</p>
+        <p>Tpp-Signature-Certificate:
+           MIIElDCCA3ygAwIBAgIJAIX2W+2EDxehMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAkZSMQswCQYDVQQIEwJGUjETMBEGA1UEChMKQ2VydEV1cm9wZTETMBEGA1UEAxMKQ2VydEV1cm9wZTAeFw0xOTAyMTkxNTIyMDdaFw0yMDAyMTkxNTIyMDdaMIGFMQswCQYDVQQGEwJHQjErMCkGA1UECgwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDErMCkGA1UEAwwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDEcMBoGA1UEYQwTUFNER0ItRkNBLWt0LTQ4NDM0NzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMoLgXDQ+nditYb2tTwxtDnDk5sOPIJyHgeN6omgcOmbmad9+b9PPknWcCdNuyruv0keIv5A8592j8IxIzF3RaNH0OE+SLzFMuAz2xRbA2BrD6q1XPcML5H4lkmEuYGuH+Xtv9zIaTtPQxapQmruUPDHD3+9MjmyyHpkyrRnqQ2JG+df7CEeD9eN53DU7B4u2MgXiibQcyWk2dk+KpGSIssOZA5+aetWs29aD6BJUUOt492UeLIMZAtlGZzF+I5ASMiXzL4wnUSOOLmSfTIsSVm7ChebZe6b7PuY/k3kBw2rrTNhHGWqYPpyzkri9lPhtICe/12r8Mze3UIOZ3QHghMCAwEAAaOCAUUwggFBMAkGA1UdEwQCMAAwHQYDVR0OBBYEFB2DbT6Y4KSVWTsDRIaIet6L0XCCMB8GA1UdIwQYMBaAFNINLe/phgwefLhOutKprennyA1PMAkGA1UdEQQCMAAwUgYDVR0fBEswSTBHoEWgQ4ZBaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS5jcmwwgYcGCCsGAQUFBwEBBHsweTAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Aua29uc2VudHVzLmNvbTBQBggrBgEFBQcwAoZEaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS1jYS5kZXIwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4IBAQAFrsonr/NNN2Hl9EBB+aAhB3exNnDXCOM8eqoDnwTA3A5Nyj5gXq2cy5s8S2CjAodj9yG3ZQdAxN/MVlZ909cmZC87M87KGw0x1LkfF5M65nMz5ynx6NeCASO0uqNkt4yKrT6EDuq7E8hoFteYQ6z4xMKX3NZ2KzIE8EWxuHOYPSjEbCeYea4ACTThOlPeFgWFMTs/oRXMkDRTcFcWthEaUKiFRJsqGMKZNp++q9gOAcB84H6+PekbieZKHxNEXTiFIwKMhCQ/FI8kwhdJxq8iBRc++fCkZ/HfS0ezYQoUaCfGckZpS6HK8TKP/HHNe/TCxS1xFVkO1k8cNK5ZFjQp</p>
+        <p>Psu-Ip-Address: 192.168.1.1</p>
+        <p>Psu-Id: testtppid</p>
+        <p>User-Agent: PostmanRuntime/7.16.3</p>
+        <p>Accept: */*</p>
+        <p>Host: lvov.csltd.com.ua</p>
+        <p>Accept-Encoding: gzip, deflate</p>
+        <p>Connection: keep-alive</p>
+    </div>
+    <h4>Response</h4>
+    <div class="code">
+        <p>HTTP/1.1 200 OK</p>
+        <p>Server: nginx/1.12.2</p>
+        <p>Date: Wed, 11 Sep 2019 12:36:06 GMT</p>
+        <p>Content-Type: application/json;charset=UTF-8</p>
+        <p>Transfer-Encoding: chunked</p>
+        <p>Connection: keep-alive</p>
+        <p>X-Content-Type-Options: nosniff</p>
+        <p>X-XSS-Protection: 1; mode=block</p>
+        <p>Cache-Control: no-cache, no-store, max-age=0, must-revalidate</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Pragma: no-cache</p>
+        <p>Expires: 0</p>
+        <p>Strict-Transport-Security: max-age=31536000 ; includeSubDomains</p>
+        <p>X-Frame-Options: DENY</p>
+        <p>{</p>
+        <p>&quot;account&quot;: {</p>
+        <p>&quot;iban&quot;: &quot;PL29124069604103800000004864&quot;,</p>
+        <p>&quot;currency&quot;: &quot;GBP&quot;,</p>
+        <p>&quot;name&quot;: &quot;GBP Account&quot;,</p>
+        <p>&quot;_links&quot;: {</p>
+        <p>&quot;balances&quot;: {</p>
+        <p>&quot;href&quot;: &quot;/v1/accounts/PL29124069604103800000004864/balances&quot;</p>
+        <p>}</p>
+        <p>}</p>
+        <p>}</p>
+        <p>}</p>
+    </div>
+    <h2>Read Balance</h2>
+    <p>Service shows available balance of the account</p>
+    <p class="code">GET [host]/OpenBankingServices/v1/accounts/[iban]/balances</p>
+    <h4>Request</h4>
+    <table>
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>Consent-ID</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>?</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>iban</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>34</td>
+            <td>IBAN</td>
+        </tr>
+    </table>
+    <h4>Response</h4>
+    <table>
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>iban</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>34</td>
+            <td>IBAN</td>
+        </tr>
+        <tr>
+            <td>balanceType</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>?</td>
+            <td>constant value = interimAvailable The working assumption is that DiPocket will provide only
+                interimAvailable balance type.
+            </td>
+        </tr>
+        <tr>
+            <td>currency</td>
+            <td>A</td>
+            <td>NOT</td>
+            <td>3</td>
+            <td>3</td>
+            <td>ISO 4217 alphabetic code;</td>
+        </tr>
+        <tr>
+            <td>amount</td>
+            <td>N</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>15</td>
+            <td>Available amount of the default account in the IBAN currency</td>
+        </tr>
+    </table>
+    <h3>Example </h3>
+    <h4>Request </h4>
+    <div class="code">
+        <p>GET [host]/OpenBankingServices/v1/accounts/[iban]/balances HTTP/1.1</p>
+        <p>Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
+           JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9</p>
+        <p>Consent-Id: KNL2UQ7S7JS3MH3</p>
+        <p>Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=</p>
+        <p>Signature: keyId=&quot;SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E&quot;,algorithm=&quot;rsa-sha256&quot;,headers=&quot;Digest
+           X-Request-ID PSU-ID TPP-Redirect-URI Date&quot;,signature=&quot;Base64(RSA-SHA256(signing string))&quot;</p>
+        <p>Tpp-Signature-Certificate:
+           MIIElDCCA3ygAwIBAgIJAIX2W+2EDxehMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAkZSMQswCQYDVQQIEwJGUjETMBEGA1UEChMKQ2VydEV1cm9wZTETMBEGA1UEAxMKQ2VydEV1cm9wZTAeFw0xOTAyMTkxNTIyMDdaFw0yMDAyMTkxNTIyMDdaMIGFMQswCQYDVQQGEwJHQjErMCkGA1UECgwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDErMCkGA1UEAwwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDEcMBoGA1UEYQwTUFNER0ItRkNBLWt0LTQ4NDM0NzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMoLgXDQ+nditYb2tTwxtDnDk5sOPIJyHgeN6omgcOmbmad9+b9PPknWcCdNuyruv0keIv5A8592j8IxIzF3RaNH0OE+SLzFMuAz2xRbA2BrD6q1XPcML5H4lkmEuYGuH+Xtv9zIaTtPQxapQmruUPDHD3+9MjmyyHpkyrRnqQ2JG+df7CEeD9eN53DU7B4u2MgXiibQcyWk2dk+KpGSIssOZA5+aetWs29aD6BJUUOt492UeLIMZAtlGZzF+I5ASMiXzL4wnUSOOLmSfTIsSVm7ChebZe6b7PuY/k3kBw2rrTNhHGWqYPpyzkri9lPhtICe/12r8Mze3UIOZ3QHghMCAwEAAaOCAUUwggFBMAkGA1UdEwQCMAAwHQYDVR0OBBYEFB2DbT6Y4KSVWTsDRIaIet6L0XCCMB8GA1UdIwQYMBaAFNINLe/phgwefLhOutKprennyA1PMAkGA1UdEQQCMAAwUgYDVR0fBEswSTBHoEWgQ4ZBaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS5jcmwwgYcGCCsGAQUFBwEBBHsweTAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Aua29uc2VudHVzLmNvbTBQBggrBgEFBQcwAoZEaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS1jYS5kZXIwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4IBAQAFrsonr/NNN2Hl9EBB+aAhB3exNnDXCOM8eqoDnwTA3A5Nyj5gXq2cy5s8S2CjAodj9yG3ZQdAxN/MVlZ909cmZC87M87KGw0x1LkfF5M65nMz5ynx6NeCASO0uqNkt4yKrT6EDuq7E8hoFteYQ6z4xMKX3NZ2KzIE8EWxuHOYPSjEbCeYea4ACTThOlPeFgWFMTs/oRXMkDRTcFcWthEaUKiFRJsqGMKZNp++q9gOAcB84H6+PekbieZKHxNEXTiFIwKMhCQ/FI8kwhdJxq8iBRc++fCkZ/HfS0ezYQoUaCfGckZpS6HK8TKP/HHNe/TCxS1xFVkO1k8cNK5ZFjQp</p>
+        <p>Psu-Ip-Address: 192.168.1.1</p>
+        <p>Psu-Id: testtppid</p>
+        <p>User-Agent: PostmanRuntime/7.16.3</p>
+        <p>Accept: */*</p>
+        <p>Host: lvov.csltd.com.ua</p>
+        <p>Accept-Encoding: gzip, deflate</p>
+        <p>Connection: keep-alive</p>
+    </div>
+    <h4>Response</h4>
+    <div class="code">
+        <p>HTTP/1.1 200 OK</p>
+        <p>Server: nginx/1.12.2</p>
+        <p>Date: Wed, 11 Sep 2019 12:38:42 GMT</p>
+        <p>Content-Type: application/json;charset=UTF-8</p>
+        <p>Transfer-Encoding: chunked</p>
+        <p>Connection: keep-alive</p>
+        <p>X-Content-Type-Options: nosniff</p>
+        <p>X-XSS-Protection: 1; mode=block</p>
+        <p>Cache-Control: no-cache, no-store, max-age=0, must-revalidate</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Pragma: no-cache</p>
+        <p>Expires: 0</p>
+        <p>Strict-Transport-Security: max-age=31536000 ; includeSubDomains</p>
+        <p>X-Frame-Options: DENY</p>
+        <p>{</p>
+        <p>&quot;account&quot;: {</p>
+        <p>&quot;iban&quot;: &quot;PL29124069604103800000004864&quot;</p>
+        <p>},</p>
+        <p>&quot;balances&quot;: [</p>
+        <p>{</p>
+        <p>&quot;balanceType&quot;: &quot;interimAvailable&quot;,</p>
+        <p>&quot;balanceAmount&quot;: {</p>
+        <p>&quot;currency&quot;: &quot;GBP&quot;,</p>
+        <p>&quot;amount&quot;: -22020</p>
+        <p>}</p>
+        <p>}</p>
+        <p>]</p>
+        <p>}</p>
+    </div>
+    <h2>Read Transaction List</h2>
+    <p>Service shows list of the transactions by account for selected period</p>
+    <p class="code">GET [host]/OpenBankingServices/v1/accounts/[iban]/transactions[query params]</p>
+    <h4>Request</h4>
+    <table class="table table-striped table-bordered">
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>Consent-ID</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>?</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>iban</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>34</td>
+            <td>IBAN</td>
+        </tr>
+        <tr>
+            <td>dateFrom</td>
+            <td>D</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>-</td>
+            <td>yyyy-mm-dd e.g.2017-07-21</td>
+        </tr>
+        <tr>
+            <td>dateTo</td>
+            <td>D</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>-</td>
+            <td>optional (inclusive the data dateTo) of the transaction list, default is &quot;now&quot; if not given
+            </td>
+        </tr>
+        <tr>
+            <td>bookingStatus</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>-</td>
+            <td>mandatory; the working assumption is that DiPocket will provide only &ldquo;booked&rdquo; status. All
+                other bookingStatus values should result in error &ldquo;400 Bad Request&rdquo;
+            </td>
+        </tr>
+    </table>
+    <h4>Response</h4>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>iban</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>34</td>
+            <td>IBAN</td>
+        </tr>
+        <tr>
+            <td>purposeCode</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>30</td>
+            <td><p>Bank transfer</p>
+                <p>Contactless Purchase</p>
+                <p>In-store Purchase</p>
+                <p>Cash withdrawal</p>
+                <p>Contactless phone</p>
+                <p>DiP transfer</p>
+                <p>Face to face</p>
+                <p>Online Purchase</p>
+                <p>Move My Funds</p>
+                <p>Fee</p>
+                <p>Payment transaction</p>
+                <p>Balance Check at ATM</p>
+                <p>Pin Change in ATM</p></td>
+        </tr>
+        <tr>
+            <td>creditorAccount</td>
+            <td>V</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>34</td>
+            <td><p>IBAN for bank transfer (outcoming)</p>
+                <p>Do not show for other transfer types</p></td>
+        </tr>
+        <tr>
+            <td>creditorName</td>
+            <td>V</td>
+            <td><p>YES</p>
+                <p></p></td>
+            <td>-</td>
+            <td>2000</td>
+            <td>&quot;[Merchant_Name]&quot;, //if purchase; &quot;First name Last name&quot;, //if Dip Transfer// Payee
+                name for bank transfer
+            </td>
+        </tr>
+        <tr>
+            <td>debtorName</td>
+            <td>V</td>
+            <td><p>YES</p>
+                <p></p></td>
+            <td>-</td>
+            <td>2000</td>
+            <td>&quot;[Merchant_Name]&quot;, //if reversal/refund; &quot;Paul Simpson&quot;,// if Dip Request Money//
+                Payer name for incoming bank transfer
+            </td>
+        </tr>
+        <tr>
+            <td>currency</td>
+            <td>A</td>
+            <td>YES</td>
+            <td>3</td>
+            <td>3</td>
+            <td>ISO 4217 alphabetic code; Transaction currency</td>
+        </tr>
+        <tr>
+            <td>amount</td>
+            <td>N</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>15</td>
+            <td>Transaction amount</td>
+        </tr>
+        <tr>
+            <td>bookingDate</td>
+            <td>D</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>-</td>
+            <td><p>2018-07-09 17:28:40.344849 Europe/Warsaw</p>
+                <p>presentment date/acceptance date</p></td>
+        </tr>
+        <tr>
+            <td>valueDate</td>
+            <td>D</td>
+            <td>YES</td>
+            <td>-</td>
+            <td>-</td>
+            <td>2018-07-09 17:28:40.344849 Europe/Warsaw authorization date/creation date</td>
+        </tr>
+    </table>
+    <h4>Request </h4>
+    <div class="code">
+        <p>GET [host]/OpenBankingServices/v1/accounts/[iban]/transactions?iban=PL61124069604100380930511879&amp;dateFrom=2017-07-21&amp;dateTo=2019-08-25&amp;bookingStatus=booked
+           HTTP/1.1</p>
+        <p>Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
+           JSESSIONID=12CAEE220DD484712C8679DFCEDD47D3</p>
+        <p>Consent-Id: E0OH9RTHGPX7I9C</p>
+        <p>Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=</p>
+        <p>Signature: keyId=&quot;SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E&quot;,algorithm=&quot;rsa-sha256&quot;,headers=&quot;Digest
+           X-Request-ID PSU-ID TPP-Redirect-URI Date&quot;,signature=&quot;Base64(RSA-SHA256(signing string))&quot;</p>
+        <p>Tpp-Signature-Certificate:
+           MIIElDCCA3ygAwIBAgIJAIX2W+2EDxehMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAkZSMQswCQYDVQQIEwJGUjETMBEGA1UEChMKQ2VydEV1cm9wZTETMBEGA1UEAxMKQ2VydEV1cm9wZTAeFw0xOTAyMTkxNTIyMDdaFw0yMDAyMTkxNTIyMDdaMIGFMQswCQYDVQQGEwJHQjErMCkGA1UECgwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDErMCkGA1UEAwwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDEcMBoGA1UEYQwTUFNER0ItRkNBLWt0LTQ4NDM0NzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMoLgXDQ+nditYb2tTwxtDnDk5sOPIJyHgeN6omgcOmbmad9+b9PPknWcCdNuyruv0keIv5A8592j8IxIzF3RaNH0OE+SLzFMuAz2xRbA2BrD6q1XPcML5H4lkmEuYGuH+Xtv9zIaTtPQxapQmruUPDHD3+9MjmyyHpkyrRnqQ2JG+df7CEeD9eN53DU7B4u2MgXiibQcyWk2dk+KpGSIssOZA5+aetWs29aD6BJUUOt492UeLIMZAtlGZzF+I5ASMiXzL4wnUSOOLmSfTIsSVm7ChebZe6b7PuY/k3kBw2rrTNhHGWqYPpyzkri9lPhtICe/12r8Mze3UIOZ3QHghMCAwEAAaOCAUUwggFBMAkGA1UdEwQCMAAwHQYDVR0OBBYEFB2DbT6Y4KSVWTsDRIaIet6L0XCCMB8GA1UdIwQYMBaAFNINLe/phgwefLhOutKprennyA1PMAkGA1UdEQQCMAAwUgYDVR0fBEswSTBHoEWgQ4ZBaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS5jcmwwgYcGCCsGAQUFBwEBBHsweTAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Aua29uc2VudHVzLmNvbTBQBggrBgEFBQcwAoZEaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS1jYS5kZXIwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4IBAQAFrsonr/NNN2Hl9EBB+aAhB3exNnDXCOM8eqoDnwTA3A5Nyj5gXq2cy5s8S2CjAodj9yG3ZQdAxN/MVlZ909cmZC87M87KGw0x1LkfF5M65nMz5ynx6NeCASO0uqNkt4yKrT6EDuq7E8hoFteYQ6z4xMKX3NZ2KzIE8EWxuHOYPSjEbCeYea4ACTThOlPeFgWFMTs/oRXMkDRTcFcWthEaUKiFRJsqGMKZNp++q9gOAcB84H6+PekbieZKHxNEXTiFIwKMhCQ/FI8kwhdJxq8iBRc++fCkZ/HfS0ezYQoUaCfGckZpS6HK8TKP/HHNe/TCxS1xFVkO1k8cNK5ZFjQp</p>
+        <p>Psu-Ip-Address: 192.168.1.1</p>
+        <p>Psu-Id: testtppid</p>
+        <p>User-Agent: PostmanRuntime/7.16.3</p>
+        <p>Accept: */*</p>
+        <p>Host: lvov.csltd.com.ua</p>
+        <p>Accept-Encoding: gzip, deflate</p>
+        <p>Connection: keep-alive</p>
+    </div>
+    <h4>Response</h4>
+    <div class="code">
+        <p>HTTP/1.1 200 OK</p>
+        <p>Server: nginx/1.12.2</p>
+        <p>Date: Wed, 11 Sep 2019 15:56:31 GMT</p>
+        <p>Content-Type: application/json;charset=UTF-8</p>
+        <p>Transfer-Encoding: chunked</p>
+        <p>Connection: keep-alive</p>
+        <p>X-Content-Type-Options: nosniff</p>
+        <p>X-XSS-Protection: 1; mode=block</p>
+        <p>Cache-Control: no-cache, no-store, max-age=0, must-revalidate</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Pragma: no-cache</p>
+        <p>Expires: 0</p>
+        <p>Strict-Transport-Security: max-age=31536000 ; includeSubDomains</p>
+        <p>X-Frame-Options: DENY</p>
+        <p>{</p>
+        <p>&quot;account&quot;: {</p>
+        <p>&quot;iban&quot;: &quot;PL61124069604100380930511879&quot;</p>
+        <p>},</p>
+        <p>&quot;transactions&quot;: {</p>
+        <p>&quot;booked&quot;: [</p>
+        <p>{</p>
+        <p>&quot;purposeCode&quot;: &quot;Top Up&quot;,</p>
+        <p>&quot;debtorName&quot;: &quot;Inteligo &quot;,</p>
+        <p>&quot;creditorAccount&quot;: {},</p>
+        <p>&quot;transactionAmount&quot;: {</p>
+        <p>&quot;currency&quot;: &quot;PLN&quot;,</p>
+        <p>&quot;amount&quot;: 100000</p>
+        <p>},</p>
+        <p>&quot;bookingDate&quot;: &quot;2019-08-23 13:29:26.943152&quot;,</p>
+        <p>&quot;valueDate&quot;: &quot;2019-08-23 13:29:19.864146&quot;</p>
+        <p>},</p>
+        <p>{</p>
+        <p>&quot;purposeCode&quot;: &quot;Move My Funds&quot;,</p>
+        <p>&quot;debtorName&quot;: &quot;KP - Virt&quot;,</p>
+        <p>&quot;creditorAccount&quot;: {},</p>
+        <p>&quot;transactionAmount&quot;: {</p>
+        <p>&quot;currency&quot;: &quot;PLN&quot;,</p>
+        <p>&quot;amount&quot;: 1000</p>
+        <p>},</p>
+        <p>&quot;bookingDate&quot;: &quot;2019-08-23 14:59:34.108301&quot;,</p>
+        <p>&quot;valueDate&quot;: &quot;2019-08-23 14:59:33.667299&quot;</p>
+        <p>},</p>
+        <p>{</p>
+        <p>&quot;purposeCode&quot;: &quot;Move My Funds&quot;,</p>
+        <p>&quot;debtorName&quot;: &quot;KP - Virt&quot;,</p>
+        <p>&quot;creditorAccount&quot;: {},</p>
+        <p>&quot;transactionAmount&quot;: {</p>
+        <p>&quot;currency&quot;: &quot;PLN&quot;,</p>
+        <p>&quot;amount&quot;: 1200</p>
+        <p>},</p>
+        <p>&quot;bookingDate&quot;: &quot;2019-08-23 15:17:04.976048&quot;,</p>
+        <p>&quot;valueDate&quot;: &quot;2019-08-23 15:17:04.513866&quot;</p>
+        <p>},</p>
+        <p>{</p>
+        <p>&quot;purposeCode&quot;: &quot;Move My Funds&quot;,</p>
+        <p>&quot;debtorName&quot;: &quot;KP - Virt&quot;,</p>
+        <p>&quot;creditorAccount&quot;: {},</p>
+        <p>&quot;transactionAmount&quot;: {</p>
+        <p>&quot;currency&quot;: &quot;PLN&quot;,</p>
+        <p>&quot;amount&quot;: 200</p>
+        <p>},</p>
+        <p>&quot;bookingDate&quot;: &quot;2019-08-23 15:40:26.232925&quot;,</p>
+        <p>&quot;valueDate&quot;: &quot;2019-08-23 15:40:25.791896&quot;</p>
+        <p>},</p>
+        <p>{</p>
+        <p>&quot;purposeCode&quot;: &quot;Move My Funds&quot;,</p>
+        <p>&quot;debtorName&quot;: &quot;KP - Virt&quot;,</p>
+        <p>&quot;creditorAccount&quot;: {},</p>
+        <p>&quot;transactionAmount&quot;: {</p>
+        <p>&quot;currency&quot;: &quot;PLN&quot;,</p>
+        <p>&quot;amount&quot;: 1000</p>
+        <p>},</p>
+        <p>&quot;bookingDate&quot;: &quot;2019-08-23 15:44:28.40484&quot;,</p>
+        <p>&quot;valueDate&quot;: &quot;2019-08-23 15:44:27.949699&quot;</p>
+        <p>},</p>
+        <p>{</p>
+        <p>&quot;purposeCode&quot;: &quot;Move My Funds&quot;,</p>
+        <p>&quot;creditorName&quot;: &quot;KP - Virt&quot;,</p>
+        <p>&quot;creditorAccount&quot;: {},</p>
+        <p>&quot;transactionAmount&quot;: {</p>
+        <p>&quot;currency&quot;: &quot;PLN&quot;,</p>
+        <p>&quot;amount&quot;: -10000</p>
+        <p>},</p>
+        <p>&quot;bookingDate&quot;: &quot;2019-08-23 15:46:35.819024&quot;,</p>
+        <p>&quot;valueDate&quot;: &quot;2019-08-23 15:46:35.501909&quot;</p>
+        <p>},</p>
+        <p>{</p>
+        <p>&quot;purposeCode&quot;: &quot;DiP transfer&quot;,</p>
+        <p>&quot;creditorName&quot;: &quot;Ted Red&quot;,</p>
+        <p>&quot;creditorAccount&quot;: {},</p>
+        <p>&quot;transactionAmount&quot;: {</p>
+        <p>&quot;currency&quot;: &quot;PLN&quot;,</p>
+        <p>&quot;amount&quot;: -5000</p>
+        <p>},</p>
+        <p>&quot;bookingDate&quot;: &quot;2019-08-23 13:42:29.103333&quot;,</p>
+        <p>&quot;valueDate&quot;: &quot;2019-08-23 13:42:28.764195&quot;</p>
+        <p>}</p>
+        <p>]</p>
+        <p>}</p>
+        <p>}</p>
+    </div>
+    <h2>Confirmation of Funds Request</h2>
+    <p>Service checks if balance of account enough to cover specified amount</p>
+    <p class="code">POST [host]/OpenBankingServices/v1/funds-confirmations</p>
+    <h4>Request</h4>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>Consent-ID</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>?</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>iban</td>
+            <td>V</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>34</td>
+            <td>IBAN</td>
+        </tr>
+        <tr>
+            <td>currency</td>
+            <td>A</td>
+            <td>NOT</td>
+            <td>3</td>
+            <td>3</td>
+            <td>ISO 4217 alphabetic code; Account currency only</td>
+        </tr>
+        <tr>
+            <td>amount</td>
+            <td>N</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>15</td>
+            <td>Amount in account currency</td>
+        </tr>
+    </table>
+    <h4>Response</h4>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <td>Parameter</td>
+            <td>Type</td>
+            <td>Nullable</td>
+            <td>Min</td>
+            <td>Max</td>
+            <td>Note</td>
+        </tr>
+        <tr>
+            <td>fundsAvailable</td>
+            <td>B</td>
+            <td>NOT</td>
+            <td>-</td>
+            <td>-</td>
+            <td><p>true -amount is smaller or equal to available amount on default account in requested currency</p>
+                <p>false - amount is bigger than available amount of default account in requested currency</p></td>
+        </tr>
+    </table>
+    <h3>Example</h3>
+    <div class="code">
+        <p>POST [host]/OpenBankingServices/v1/funds-confirmations HTTP/1.1</p>
+        <p>Cookie: JSESSIONID=DEBBBD061A365E2A70505AFB5CE7F1A7; Cookie_1=value;
+           JSESSIONID=ACF73079EF4B1C91B1A416FB454CD0E9</p>
+        <p>Consent-Id: KNL2UQ7S7JS3MH3</p>
+        <p>Content-Type: application/json</p>
+        <p>Digest: SHA-256=ZuYiOtZkVxhjWmwTO5lOpsPevUNMezvk6dfb6fVhebM=</p>
+        <p>Signature: keyId=&quot;SN=9FA1,CA=D-TRUST%20CA%202-1%202015,O=DTrust%20GmbH,C=D-E&quot;,algorithm=&quot;rsa-sha256&quot;,headers=&quot;Digest
+           X-Request-ID PSU-ID TPP-Redirect-URI Date&quot;,signature=&quot;Base64(RSA-SHA256(signing string))&quot;</p>
+        <p>Tpp-Signature-Certificate:
+           MIIElDCCA3ygAwIBAgIJAIX2W+2EDxehMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAkZSMQswCQYDVQQIEwJGUjETMBEGA1UEChMKQ2VydEV1cm9wZTETMBEGA1UEAxMKQ2VydEV1cm9wZTAeFw0xOTAyMTkxNTIyMDdaFw0yMDAyMTkxNTIyMDdaMIGFMQswCQYDVQQGEwJHQjErMCkGA1UECgwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDErMCkGA1UEAwwiS29uc2VudHVzIFBheW1lbnQgU2VydmljZXMgTGltaXRlZDEcMBoGA1UEYQwTUFNER0ItRkNBLWt0LTQ4NDM0NzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMoLgXDQ+nditYb2tTwxtDnDk5sOPIJyHgeN6omgcOmbmad9+b9PPknWcCdNuyruv0keIv5A8592j8IxIzF3RaNH0OE+SLzFMuAz2xRbA2BrD6q1XPcML5H4lkmEuYGuH+Xtv9zIaTtPQxapQmruUPDHD3+9MjmyyHpkyrRnqQ2JG+df7CEeD9eN53DU7B4u2MgXiibQcyWk2dk+KpGSIssOZA5+aetWs29aD6BJUUOt492UeLIMZAtlGZzF+I5ASMiXzL4wnUSOOLmSfTIsSVm7ChebZe6b7PuY/k3kBw2rrTNhHGWqYPpyzkri9lPhtICe/12r8Mze3UIOZ3QHghMCAwEAAaOCAUUwggFBMAkGA1UdEwQCMAAwHQYDVR0OBBYEFB2DbT6Y4KSVWTsDRIaIet6L0XCCMB8GA1UdIwQYMBaAFNINLe/phgwefLhOutKprennyA1PMAkGA1UdEQQCMAAwUgYDVR0fBEswSTBHoEWgQ4ZBaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS5jcmwwgYcGCCsGAQUFBwEBBHsweTAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Aua29uc2VudHVzLmNvbTBQBggrBgEFBQcwAoZEaHR0cHM6Ly9zMy5ldS13ZXN0LTIuYW1hem9uYXdzLmNvbS9rLWNlcnRzL2t0LXN1Y2Nlc3Mtam91cm5leS1jYS5kZXIwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4IBAQAFrsonr/NNN2Hl9EBB+aAhB3exNnDXCOM8eqoDnwTA3A5Nyj5gXq2cy5s8S2CjAodj9yG3ZQdAxN/MVlZ909cmZC87M87KGw0x1LkfF5M65nMz5ynx6NeCASO0uqNkt4yKrT6EDuq7E8hoFteYQ6z4xMKX3NZ2KzIE8EWxuHOYPSjEbCeYea4ACTThOlPeFgWFMTs/oRXMkDRTcFcWthEaUKiFRJsqGMKZNp++q9gOAcB84H6+PekbieZKHxNEXTiFIwKMhCQ/FI8kwhdJxq8iBRc++fCkZ/HfS0ezYQoUaCfGckZpS6HK8TKP/HHNe/TCxS1xFVkO1k8cNK5ZFjQp</p>
+        <p>Psu-Ip-Address: 192.168.1.1</p>
+        <p>Psu-Id: testtppid</p>
+        <p>User-Agent: PostmanRuntime/7.16.3</p>
+        <p>Accept: */*</p>
+        <p>Host: lvov.csltd.com.ua</p>
+        <p>Accept-Encoding: gzip, deflate</p>
+        <p>Content-Length: 147</p>
+        <p>Connection: keep-alive</p>
+        <p>{</p>
+        <p>&quot;account&quot;: {</p>
+        <p>&quot;iban&quot;: &quot;PL32124069604100800000004863&quot;</p>
+        <p>},</p>
+        <p>&quot;instructedAmount&quot;: {</p>
+        <p>&quot;amount&quot;: &quot;140&quot;,</p>
+        <p>&quot;currency&quot;: &quot;PLN&quot;</p>
+        <p>}</p>
+        <p>}</p>
+    </div>
+    <h4>Response</h4>
+    <div class="code">
+        <p>HTTP/1.1 200 OK</p>
+        <p>Server: nginx/1.12.2</p>
+        <p>Date: Wed, 11 Sep 2019 12:42:30 GMT</p>
+        <p>Content-Type: application/json;charset=UTF-8</p>
+        <p>Transfer-Encoding: chunked</p>
+        <p>Connection: keep-alive</p>
+        <p>X-Content-Type-Options: nosniff</p>
+        <p>X-XSS-Protection: 1; mode=block</p>
+        <p>Cache-Control: no-cache, no-store, max-age=0, must-revalidate</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0</p>
+        <p>Pragma: no-cache</p>
+        <p>Expires: 0</p>
+        <p>Strict-Transport-Security: max-age=31536000 ; includeSubDomains</p>
+        <p>X-Frame-Options: DENY</p>
+        <p>{</p>
+        <p>&quot;fundsAvailable&quot;: true</p>
+        <p>}</p>
+    </div>
+    <h2>Consent utilization</h2>
+    <p>Table describes how to count data access attempts</p>
+    <table class="table table-striped table-bordered">
+        <tr>
+            <td></td>
+            <td>Access attempts decrease</td>
+        </tr>
+        <tr>
+            <td><a>Get Consent Status Request</a></td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td><a>Get Consent Request</a></td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td><a>Delete an Account Information Consent Object</a></td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td><a>Read Account List</a></td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td><a>Read Account Details</a></td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td><a>Read Balance</a></td>
+            <td>+</td>
+        </tr>
+        <tr>
+            <td><a>Read Transaction List</a></td>
+            <td>+</td>
+        </tr>
+        <tr>
+            <td><a>Confirmation of Funds Request</a></td>
+            <td>+</td>
+        </tr>
+        <tr>
+            <td>Request returns error</td>
+            <td>-</td>
+        </tr>
+    </table>
+</div>
 </body>
 </html>
