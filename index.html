@@ -21,8 +21,7 @@
 <div class="container">
     <h1 class="text-center">Open banking &mdash; DiPocket <br>API Specification</h1>
     <h2>Overview</h2>
-    <p>This document specifies the basic set of API calls to access information about Users accounts by third
-       parties.</p>
+    <p>This document describes the DiPocket’s implementation of Open Banking dedicated interface and specifies the set of API calls to access information about PSU accounts and receive the confirmation of funds. The DiPocket’s implementation of Open Banking dedicated interface follows the “NextGenPSD2 XS2A Specification” developed by Berlin Group market initiative. The Berlin Group is a pan-European payments interoperability standards and harmonization initiative with the primary objective of defining open and common scheme- and processor-independent standards in the interbanking domain.</p>
     <h2>API definitions</h2>
     <p>The following abbreviations are used for the format:</p>
     <table class="table table-striped border">
@@ -259,8 +258,8 @@ x-request-id: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
 psu-id: PSU-1234
 tpp-redirect-uri: https://client.example.com/cb&code_Cchallenge_Mmethod="S256"
 date: Sun, 06 Aug 2017 15:02:37 GMT</pre>
-    <h2>Consent Request on Dedicated Accounts </h2>
-    <p>Service allows to obtain consent for User&rsquo;s data access</p>
+    <h2>PSU authentication journey</h2>
+    <p>This service is intended for the PSU authentication prior to providing the accounts and confirmation of funds services.</p>
     <pre class="code">
 POST [host]/v1/consents</pre>
     <h3>Request</h3>
